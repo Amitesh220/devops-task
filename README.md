@@ -11,7 +11,6 @@ The pipeline showcases automation, scalability, and DevOps best practices.
 ---
 
 ## 🏗️ Architecture Diagram
-*(Add `docs/architecture.png` if you create one)*
 
 **Flow:**  
 Developer → GitHub (main/dev) → Jenkins (Webhook Trigger) → Docker Build & Push → AWS ECS Deployment → User accesses `http://13.235.86.93:3000`
@@ -24,11 +23,14 @@ devops-task/
 │ ├── main.tf
 │ ├── outputs.tf
 │ ├── provider.tf
-│ ├── terraform.tfstate
-│ ├── terraform.tfstate.backup
-│ ├── terraform.tfvars.example
 │ ├── variables.tf
 │ └── providers/registry.terraform.io/
+├── Deployment-proof
+│ ├── LIVE
+│ ├── DOCKER
+│ ├── AWS
+│ ├── JENKINS
+│ ├── LOCAL
 ├── .gitignore
 ├── app.js # Express server
 ├── Dockerfile
