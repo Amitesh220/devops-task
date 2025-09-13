@@ -24,7 +24,6 @@ devops-task/
 │ ├── outputs.tf
 │ ├── provider.tf
 │ ├── variables.tf
-│ └── providers/registry.terraform.io/
 ├── Deployment-proof
 │ ├── LIVE
 │ ├── DOCKER
