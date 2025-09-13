@@ -44,24 +44,11 @@ pipeline {
             # Source the image properties file
             source image.properties
             
-            # Check if AWS CLI is installed, if not install it
+            # Check if AWS CLI is available
             if ! command -v aws &> /dev/null; then
-                echo "AWS CLI not found, installing..."
-                
-                # Install unzip if not available
-                if ! command -v unzip &> /dev/null; then
-                    echo "Installing unzip..."
-                    sudo apt-get update -y
-                    sudo apt-get install -y unzip
-                fi
-                
-                # Download and install AWS CLI
-                curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                unzip -q awscliv2.zip
-                sudo ./aws/install
-                
-                # Clean up
-                rm -rf aws awscliv2.zip
+                echo "Error: AWS CLI not found. Please install AWS CLI on the Jenkins server."
+                echo "Run: sudo apt-get update && sudo apt-get install -y awscli"
+                exit 1
             fi
             
             # Verify AWS credentials
@@ -135,18 +122,18 @@ EOF
             
             # Check if ECS service exists, if not create it
             if ! aws ecs describe-services --cluster ${CLUSTER_NAME} --services ${SERVICE_NAME} --query 'services[0].status' --output text | grep -q "ACTIVE"; then
-                echo "Service does not exist or is not active. Creating service: ${SERVICE_NAME}"
-                
-                # You'll need to replace these subnet and security group IDs with your actual values
-                # For now, this will fail and show you what needs to be configured
-                aws ecs create-service \
-                  --cluster ${CLUSTER_NAME} \
-                  --service-name ${SERVICE_NAME} \
-                  --task-definition ${TASK_DEF_ARN} \
-                  --desired-count 1 \
-                  --launch-type FARGATE \
-                  --network-configuration "awsvpcConfiguration={subnets=[subnet-xxxxxxxx],securityGroups=[sg-xxxxxxxx],assignPublicIp=ENABLED}" \
-                  --load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:${AWS_REGION}:${AWS_ACCOUNT_ID}:targetgroup/your-target-group,containerName=${CONTAINER_NAME},containerPort=${CONTAINER_PORT}" || echo "Service creation failed - please configure networking manually"
+                echo "Service does not exist or is not active."
+                echo "Please create the ECS service manually with proper networking configuration."
+                echo "Task definition ARN: ${TASK_DEF_ARN}"
+                echo ""
+                echo "To create the service manually, use:"
+                echo "aws ecs create-service \\"
+                echo "  --cluster ${CLUSTER_NAME} \\"
+                echo "  --service-name ${SERVICE_NAME} \\"
+                echo "  --task-definition ${TASK_DEF_ARN} \\"
+                echo "  --desired-count 1 \\"
+                echo "  --launch-type FARGATE \\"
+                echo "  --network-configuration 'awsvpcConfiguration={subnets=[YOUR_SUBNET_ID],securityGroups=[YOUR_SECURITY_GROUP_ID],assignPublicIp=ENABLED}'"
             else
                 # Update existing ECS service with new task definition
                 echo "Updating existing ECS service: ${SERVICE_NAME}"
@@ -155,14 +142,14 @@ EOF
                   --service ${SERVICE_NAME} \
                   --task-definition ${TASK_DEF_ARN} \
                   --force-new-deployment
+                
+                echo "ECS Deployment initiated for service: ${SERVICE_NAME}"
+                
+                # Wait for deployment to complete (optional)
+                echo "Waiting for service to stabilize..."
+                aws ecs wait services-stable --cluster ${CLUSTER_NAME} --services ${SERVICE_NAME}
+                echo "Deployment completed successfully!"
             fi
-            
-            echo "ECS Deployment initiated for service: ${SERVICE_NAME}"
-            
-            # Wait for deployment to complete (optional)
-            echo "Waiting for service to stabilize..."
-            aws ecs wait services-stable --cluster ${CLUSTER_NAME} --services ${SERVICE_NAME}
-            echo "Deployment completed successfully!"
           '''
         }
       }
@@ -174,9 +161,16 @@ EOF
     }
     success {
       echo 'Pipeline completed successfully!'
+      echo 'Docker image pushed to: ${DOCKER_IMAGE}'
+      echo 'ECS task definition updated for cluster: ${CLUSTER_NAME}'
     }
     failure {
       echo 'Pipeline failed. Check the logs for details.'
+      echo 'Common issues:'
+      echo '1. AWS CLI not installed - run: sudo apt-get install -y awscli'
+      echo '2. Missing IAM roles - create devops-task-ecs-exec-role and devops-task-task-role'
+      echo '3. Insufficient AWS permissions'
+      echo '4. ECS service needs manual creation with networking config'
     }
   }
 }
