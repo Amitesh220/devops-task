@@ -1,4 +1,4 @@
-# DevOps Task – Logo Server
+# DevOps Task – Swayatt Drishtigochar Logo Server
 
 A simple Node.js + Express.js application that serves the `logoswayatt.png` image and demonstrates a complete CI/CD pipeline using Jenkins, Docker, Terraform, and AWS.
 
@@ -59,10 +59,10 @@ Copy code
 npm start
 Access at: http://localhost:3000}
 
-⚙️ CI/CD Pipeline Flow
+### ⚙️ CI/CD Pipeline Flow
 Source Control
 
-GitHub repository with branching strategy: main & dev.
+GitHub repository with branching strategy: main & dev.(deployment on main)
 
 Webhook triggers Jenkins on every push.
 
@@ -90,10 +90,10 @@ Monitoring & Logging
 
 CloudWatch collects logs and basic metrics for container performance.
 
-🌐 Deployed Application
+### 🌐 Deployed Application
 Public URL: http://13.235.86.93:3000
 
-🛠 Tools & Services Used
+### 🛠 Tools & Services Used
 Node.js & Express.js – Web application framework
 
 Docker – Containerization
@@ -106,7 +106,7 @@ AWS ECS & CloudWatch – Deployment & monitoring
 
 GitHub – Source control
 
-🧩 Challenges & Solutions
+### 🧩 Challenges & Solutions
 Jenkins on t2.micro:
 Running Jenkins on a free-tier t2.micro EC2 instance caused frequent service stops because of limited CPU and memory.
 Solution: Optimized Jenkins by reducing build concurrency and cleaning up old builds. For production, upgrading to at least t3.small is recommended.
@@ -117,7 +117,7 @@ Solution: Configured automatic cleanup of unused resources, enabled billing alar
 
 These experiences highlight the importance of right-sizing infrastructure and actively monitoring costs.
 
-🔮 Possible Improvements
+### 🔮 Possible Improvements
 Add automated tests to the pipeline.
 
 Use a multi-stage Docker build to reduce image size.
@@ -126,10 +126,10 @@ Enable HTTPS with a load balancer and SSL certificate.
 
 Set up Terraform remote backend (e.g., S3 + DynamoDB) for safer state management.
 
-🖼️ Application Overview
+### 🖼️ Application Overview
 This lightweight Express.js server listens on port 3000 and serves a single image (logoswayatt.png) at the root endpoint /.
 
-Endpoint:
+### Endpoint:
 GET / → Returns the Swayatt logo image.
 Server running on http://0.0.0.0:3000
 Access the live application: http://13.235.86.93:3000
