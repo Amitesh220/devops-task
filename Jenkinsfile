@@ -47,9 +47,21 @@ pipeline {
             # Check if AWS CLI is installed, if not install it
             if ! command -v aws &> /dev/null; then
                 echo "AWS CLI not found, installing..."
+                
+                # Install unzip if not available
+                if ! command -v unzip &> /dev/null; then
+                    echo "Installing unzip..."
+                    sudo apt-get update -y
+                    sudo apt-get install -y unzip
+                fi
+                
+                # Download and install AWS CLI
                 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
                 unzip -q awscliv2.zip
                 sudo ./aws/install
+                
+                # Clean up
+                rm -rf aws awscliv2.zip
             fi
             
             # Verify AWS credentials
