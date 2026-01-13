@@ -1,4 +1,4 @@
-# DevOps Task – demo Server
+# DevOps – demo Server
 
 A simple Node.js + Express.js application that serves the `logoswayatt.png` image and demonstrates a complete CI/CD pipeline using Jenkins, Docker, Terraform, and AWS.
 
